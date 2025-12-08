@@ -1,6 +1,9 @@
 <?php
 // Conexión a la base de datos
-$conn = new mysqli("localhost", "root", "", "agencia_db");
+// Allow injection of $conn for testing purposes
+if (!isset($conn)) {
+    $conn = new mysqli("localhost", "root", "", "agencia_db");
+}
 if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
@@ -34,7 +37,7 @@ $result = $conn->query($sql);
 $conn->close();
 ?>
 
-/* <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -122,4 +125,4 @@ $conn->close();
         <p>&copy; 2023 Agencia de Viajes. Todos los derechos reservados.</p>
     </div>
 </body>
-</html> */
+</html>

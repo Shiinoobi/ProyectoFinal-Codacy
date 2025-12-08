@@ -15,6 +15,7 @@ composer.lock
 .phpunit.cache/
 coverage.xml
 coverage/
+coverage-*.xml
 
 # IDE
 .vscode/

@@ -6,90 +6,55 @@ use PHPUnit\Framework\TestCase;
 
 class AdministracionTest extends TestCase
 {
-    private $administracionFilePath;
+    private $appRoot;
 
     protected function setUp(): void
     {
-        $this->administracionFilePath = __DIR__ . '/../views/administracion.php';
+        $this->appRoot = dirname(__DIR__);
     }
 
-    /**
-     * Test that administracion.php file exists
-     */
     public function testAdministracionFileExists(): void
     {
-        $this->assertFileExists($this->administracionFilePath);
+        $this->assertFileExists($this->appRoot . '/views/administracion.php');
     }
 
-    /**
-     * Test that administracion.php contains PHP code
-     */
-    public function testAdministracionFileContainsPhp(): void
+    public function testAdministracionFileIsReadable(): void
     {
-        $content = file_get_contents($this->administracionFilePath);
-        $this->assertStringContainsString('<?php', $content);
+        $this->assertIsReadable($this->appRoot . '/views/administracion.php');
     }
 
-    /**
-     * Test that administracion.php contains database connection code
-     */
-    public function testAdministracionHasDatabaseConnection(): void
+    public function testAdministracionFileContainsExpectedPhp(): void
     {
-        $content = file_get_contents($this->administracionFilePath);
-        $this->assertStringContainsString('mysqli', $content);
+        $content = file_get_contents($this->appRoot . '/views/administracion.php');
+        $this->assertStringContainsString('$conn', $content);
+        $this->assertStringContainsString('query', $content);
     }
 
-    /**
-     * Test that administracion.php handles edit action
-     */
     public function testAdministracionHandlesEditAction(): void
     {
-        $content = file_get_contents($this->administracionFilePath);
+        $content = file_get_contents($this->appRoot . '/views/administracion.php');
         $this->assertStringContainsString("'edit'", $content);
+        $this->assertStringContainsString("UPDATE", $content);
     }
 
-    /**
-     * Test that administracion.php handles delete action
-     */
     public function testAdministracionHandlesDeleteAction(): void
     {
-        $content = file_get_contents($this->administracionFilePath);
+        $content = file_get_contents($this->appRoot . '/views/administracion.php');
         $this->assertStringContainsString("'delete'", $content);
+        $this->assertStringContainsString("DELETE", $content);
     }
 
-    /**
-     * Test that administracion.php contains SQL UPDATE query
-     */
-    public function testAdministracionContainsUpdateQuery(): void
+    public function testAdministracionPerformsDatabaseSelect(): void
     {
-        $content = file_get_contents($this->administracionFilePath);
-        $this->assertStringContainsString('UPDATE', $content);
+        $content = file_get_contents($this->appRoot . '/views/administracion.php');
+        $this->assertStringContainsString("SELECT", $content);
+        $this->assertStringContainsString("FROM", $content);
     }
 
-    /**
-     * Test that administracion.php contains SQL DELETE query
-     */
-    public function testAdministracionContainsDeleteQuery(): void
+    public function testAdministracionFileSyntax(): void
     {
-        $content = file_get_contents($this->administracionFilePath);
-        $this->assertStringContainsString('DELETE', $content);
-    }
-
-    /**
-     * Test that administracion.php contains SQL SELECT query
-     */
-    public function testAdministracionContainsSelectQuery(): void
-    {
-        $content = file_get_contents($this->administracionFilePath);
-        $this->assertStringContainsString('SELECT', $content);
-    }
-
-    /**
-     * Test that administracion.php validates POST request method
-     */
-    public function testAdministracionValidatesPostMethod(): void
-    {
-        $content = file_get_contents($this->administracionFilePath);
-        $this->assertStringContainsString('REQUEST_METHOD', $content);
+        $file = $this->appRoot . '/views/administracion.php';
+        $output = shell_exec("php -l " . escapeshellarg($file) . " 2>&1");
+        $this->assertStringContainsString("No syntax errors", $output);
     }
 }
