@@ -1,4 +1,24 @@
-.env
 
 #Ignore vscode AI rules
-.github\instructions\codacy.instructions.md
+.github/instructions/codacy.instructions.md
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Composer
+/vendor/
+composer.lock
+
+# PHPUnit
+.phpunit.cache/
+coverage.xml
+coverage/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
