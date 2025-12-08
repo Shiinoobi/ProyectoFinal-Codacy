@@ -6,27 +6,27 @@ use PHPUnit\Framework\TestCase;
 
 class IndexTest extends TestCase
 {
-    /**
-     * Test that index.php can be included without fatal errors
-     */
-    public function testIndexFileExists(): void
+    private $indexPath;
+
+    protected function setUp(): void
     {
-        $indexPath = __DIR__ . '/../index.php';
-        $this->assertFileExists($indexPath);
+        $this->indexPath = __DIR__ . '/../index.php';
     }
 
     /**
-     * Test that the index.php file has expected structure
+     * Test that index.php file exists
      */
-    public function testIndexFileContent(): void
+    public function testIndexFileExists(): void
     {
-        $indexPath = __DIR__ . '/../index.php';
-        $content = file_get_contents($indexPath);
-        
-        // Check for key elements in index.php
-        $this->assertStringContainsString('mysqli', $content, 'File should contain mysqli');
-        $this->assertStringContainsString('destinos', $content, 'File should contain destinos');
-        $this->assertStringContainsString('DOCTYPE', $content, 'File should contain HTML DOCTYPE');
+        $this->assertFileExists($this->indexPath);
+    }
+
+    /**
+     * Test that index.php file is readable
+     */
+    public function testIndexFileIsReadable(): void
+    {
+        $this->assertIsReadable($this->indexPath);
     }
 
     /**
@@ -34,9 +34,121 @@ class IndexTest extends TestCase
      */
     public function testIndexStartsWithPhpTag(): void
     {
-        $indexPath = __DIR__ . '/../index.php';
-        $content = file_get_contents($indexPath);
-        
-        $this->assertStringStartsWith('<?php', $content, 'File should start with PHP opening tag');
+        $content = file_get_contents($this->indexPath);
+        $this->assertStringStartsWith('<?php', $content);
+    }
+
+    /**
+     * Test that index.php contains session_start()
+     */
+    public function testIndexCallsSessionStart(): void
+    {
+        $content = file_get_contents($this->indexPath);
+        $this->assertStringContainsString('session_start()', $content);
+    }
+
+    /**
+     * Test that index.php performs database connection
+     */
+    public function testIndexConnectsToDatabase(): void
+    {
+        $content = file_get_contents($this->indexPath);
+        $this->assertStringContainsString('mysqli', $content);
+        $this->assertStringContainsString('connect_error', $content);
+    }
+
+    /**
+     * Test that index.php queries Nacional destinos
+     */
+    public function testIndexQueryNacionales(): void
+    {
+        $content = file_get_contents($this->indexPath);
+        $this->assertStringContainsString('Nacional', $content);
+        $this->assertStringContainsString('SELECT * FROM destinos', $content);
+    }
+
+    /**
+     * Test that index.php queries Internacional destinos
+     */
+    public function testIndexQueryInternacionales(): void
+    {
+        $content = file_get_contents($this->indexPath);
+        $this->assertStringContainsString('Internacional', $content);
+    }
+
+    /**
+     * Test that index.php checks for user session
+     */
+    public function testIndexChecksUserSession(): void
+    {
+        $content = file_get_contents($this->indexPath);
+        $this->assertStringContainsString('$_SESSION', $content);
+        $this->assertStringContainsString('isset', $content);
+    }
+
+    /**
+     * Test that index.php handles empty destinos
+     */
+    public function testIndexHandlesEmptyDestinos(): void
+    {
+        $content = file_get_contents($this->indexPath);
+        $this->assertStringContainsString('num_rows', $content);
+        $this->assertStringContainsString('No hay destinos', $content);
+    }
+
+    /**
+     * Test that index.php closes database connection
+     */
+    public function testIndexClosesConnection(): void
+    {
+        $content = file_get_contents($this->indexPath);
+        $this->assertStringContainsString('$conn->close()', $content);
+    }
+
+    /**
+     * Test that index.php has proper HTML structure
+     */
+    public function testIndexHasValidHtmlStructure(): void
+    {
+        $content = file_get_contents($this->indexPath);
+        $this->assertStringContainsString('<!DOCTYPE html>', $content);
+        $this->assertStringContainsString('<html', $content);
+        $this->assertStringContainsString('</html>', $content);
+        $this->assertStringContainsString('<head>', $content);
+        $this->assertStringContainsString('</head>', $content);
+        $this->assertStringContainsString('<body>', $content);
+        $this->assertStringContainsString('</body>', $content);
+    }
+
+    /**
+     * Test that index.php includes header navigation
+     */
+    public function testIndexIncludesNavigation(): void
+    {
+        $content = file_get_contents($this->indexPath);
+        $this->assertStringContainsString('class="header"', $content);
+        $this->assertStringContainsString('class="nav"', $content);
+        $this->assertStringContainsString('Catálogo de Viajes', $content);
+        $this->assertStringContainsString('Reservas', $content);
+        $this->assertStringContainsString('Administración', $content);
+    }
+
+    /**
+     * Test that index.php has footer
+     */
+    public function testIndexIncludesFooter(): void
+    {
+        $content = file_get_contents($this->indexPath);
+        $this->assertStringContainsString('class="footer"', $content);
+        $this->assertStringContainsString('derechos reservados', strtolower($content));
+    }
+
+    /**
+     * Test PHP syntax validity
+     */
+    public function testIndexPhpSyntaxIsValid(): void
+    {
+        $output = shell_exec("php -l " . escapeshellarg($this->indexPath) . " 2>&1");
+        $this->assertStringContainsString("No syntax errors", $output);
     }
 }
