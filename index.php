@@ -1,12 +1,12 @@
 <?php
 // Conexión a la base de datos
 $conn = @new mysqli("localhost", "root", "", "agencia_db");
+
 if ($conn->connect_error) {
-    // Escape the error message to prevent raw output
-    die("Conexión fallida: " . htmlspecialchars($conn->connect_error));
+    $safeError = htmlspecialchars($conn->connect_error, ENT_QUOTES, 'UTF-8');
+    die("Conexión fallida: " . $safeError);
 }
 
-// Consultas para obtener destinos nacionales e internacionales
 $sql_nacionales = "SELECT * FROM destinos WHERE tipo_destino='Nacional'";
 $result_nacionales = $conn->query($sql_nacionales);
 
@@ -18,7 +18,7 @@ $result_internacionales = $conn->query($sql_internacionales);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars("Inicio - Agencia de Viajes"); ?></title>
+    <title><?php echo htmlspecialchars("Inicio - Agencia de Viajes", ENT_QUOTES, 'UTF-8'); ?></title>
     <link rel="stylesheet" href="public/assets/css/style.css">
 
     <style>
@@ -56,78 +56,75 @@ $result_internacionales = $conn->query($sql_internacionales);
 <body>
 
     <div class="header">
-        <div class="left"><?php echo htmlspecialchars("Inicio"); ?></div>
+        <div class="left"><?php echo htmlspecialchars("Inicio", ENT_QUOTES, 'UTF-8'); ?></div>
         <div class="right">
-            <?php
-            // Session removed — replace this logic with cookies or external auth if needed
-            echo "<a href='views/login_form.php' style='color: white;'>" . htmlspecialchars("Iniciar Sesión") . "</a>";
-            ?>
+            <a href="views/login_form.php" style="color: white;"><?php echo htmlspecialchars("Iniciar Sesión", ENT_QUOTES, 'UTF-8'); ?></a>
         </div>
     </div>
 
     <div class="nav">
-        <a href="index.php"><?php echo htmlspecialchars("Inicio"); ?></a>
-        <a href="views/catalogo_viajes.php"><?php echo htmlspecialchars("Catálogo de Viajes"); ?></a>
-        <a href="views/detalles_reservas.php"><?php echo htmlspecialchars("Reservas"); ?></a>
-        <a href="views/administracion.php"><?php echo htmlspecialchars("Administración"); ?></a>
-        <a href="views/contacto.php"><?php echo htmlspecialchars("Soporte y Contacto"); ?></a>
+        <a href="index.php"><?php echo htmlspecialchars("Inicio", ENT_QUOTES, 'UTF-8'); ?></a>
+        <a href="views/catalogo_viajes.php"><?php echo htmlspecialchars("Catálogo de Viajes", ENT_QUOTES, 'UTF-8'); ?></a>
+        <a href="views/detalles_reservas.php"><?php echo htmlspecialchars("Reservas", ENT_QUOTES, 'UTF-8'); ?></a>
+        <a href="views/administracion.php"><?php echo htmlspecialchars("Administración", ENT_QUOTES, 'UTF-8'); ?></a>
+        <a href="views/contacto.php"><?php echo htmlspecialchars("Soporte y Contacto", ENT_QUOTES, 'UTF-8'); ?></a>
     </div>
 
     <div class="main-content">
-        <h1><?php echo htmlspecialchars("Bienvenido a la Agencia de Viajes"); ?></h1>
+        <h1><?php echo htmlspecialchars("Bienvenido a la Agencia de Viajes", ENT_QUOTES, 'UTF-8'); ?></h1>
 
         <div class="destinos">
-            <h2><?php echo htmlspecialchars("Destinos Nacionales"); ?></h2>
+            <h2><?php echo htmlspecialchars("Destinos Nacionales", ENT_QUOTES, 'UTF-8'); ?></h2>
+
             <div class="destinos-container">
-
-                <?php
-                if ($result_nacionales && $result_nacionales->num_rows > 0) {
-                    while ($row = $result_nacionales->fetch_assoc()) {
-                        echo "<form action='views/detalles_viaje.php' method='get'>";
-                        echo "<input type='hidden' name='id' value='" . htmlspecialchars($row['id']) . "'>";
-                        echo "<button type='submit' class='destino'>";
-                        echo "<img src='" . htmlspecialchars($row['foto']) . "' alt='" . htmlspecialchars($row['city']) . "'>";
-                        echo "<h3>" . htmlspecialchars($row['city']) . "</h3>";
-                        echo "</button>";
-                        echo "</form>";
-                    }
-                } else {
-                    echo "<p>" . htmlspecialchars("No hay destinos nacionales disponibles.") . "</p>";
-                }
-                ?>
-
+                <?php if ($result_nacionales && $result_nacionales->num_rows > 0): ?>
+                    <?php while ($row = $result_nacionales->fetch_assoc()): 
+                        $id    = htmlspecialchars($row['id'], ENT_QUOTES, 'UTF-8');
+                        $city  = htmlspecialchars($row['city'], ENT_QUOTES, 'UTF-8');
+                        $foto  = htmlspecialchars($row['foto'], ENT_QUOTES, 'UTF-8');
+                    ?>
+                        <form action="views/detalles_viaje.php" method="get">
+                            <input type="hidden" name="id" value="<?php echo $id; ?>">
+                            <button type="submit" class="destino">
+                                <img src="<?php echo $foto; ?>" alt="<?php echo $city; ?>">
+                                <h3><?php echo $city; ?></h3>
+                            </button>
+                        </form>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p><?php echo htmlspecialchars("No hay destinos nacionales disponibles.", ENT_QUOTES, 'UTF-8'); ?></p>
+                <?php endif; ?>
             </div>
 
-            <h2><?php echo htmlspecialchars("Destinos Internacionales"); ?></h2>
+            <h2><?php echo htmlspecialchars("Destinos Internacionales", ENT_QUOTES, 'UTF-8'); ?></h2>
+
             <div class="destinos-container">
-
-                <?php
-                if ($result_internacionales && $result_internacionales->num_rows > 0) {
-                    while ($row = $result_internacionales->fetch_assoc()) {
-                        echo "<form action='views/detalles_viaje.php' method='get'>";
-                        echo "<input type='hidden' name='id' value='" . htmlspecialchars($row['id']) . "'>";
-                        echo "<button type='submit' class='destino'>";
-                        echo "<img src='" . htmlspecialchars($row['foto']) . "' alt='" . htmlspecialchars($row['city']) . "'>";
-                        echo "<h3>" . htmlspecialchars($row['city']) . "</h3>";
-                        echo "</button>";
-                        echo "</form>";
-                    }
-                } else {
-                    echo "<p>" . htmlspecialchars("No hay destinos internacionales disponibles.") . "</p>";
-                }
-                ?>
-
+                <?php if ($result_internacionales && $result_internacionales->num_rows > 0): ?>
+                    <?php while ($row = $result_internacionales->fetch_assoc()): 
+                        $id    = htmlspecialchars($row['id'], ENT_QUOTES, 'UTF-8');
+                        $city  = htmlspecialchars($row['city'], ENT_QUOTES, 'UTF-8');
+                        $foto  = htmlspecialchars($row['foto'], ENT_QUOTES, 'UTF-8');
+                    ?>
+                        <form action="views/detalles_viaje.php" method="get">
+                            <input type="hidden" name="id" value="<?php echo $id; ?>">
+                            <button type="submit" class="destino">
+                                <img src="<?php echo $foto; ?>" alt="<?php echo $city; ?>">
+                                <h3><?php echo $city; ?></h3>
+                            </button>
+                        </form>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p><?php echo htmlspecialchars("No hay destinos internacionales disponibles.", ENT_QUOTES, 'UTF-8'); ?></p>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        <p><?php echo htmlspecialchars("© 2024 Agencia de Viajes. Todos los derechos reservados."); ?></p>
+        <p><?php echo htmlspecialchars("© 2024 Agencia de Viajes. Todos los derechos reservados.", ENT_QUOTES, 'UTF-8'); ?></p>
     </div>
 
 </body>
 </html>
 
-<?php
-$conn->close();
-?>
+<?php $conn->close(); ?>
