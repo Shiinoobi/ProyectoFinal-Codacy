@@ -34,7 +34,7 @@ $result = $conn->query($sql);
 $conn->close();
 ?>
 
-<!DOCTYPE html>
+/* <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -122,4 +122,4 @@ $conn->close();
         <p>&copy; 2023 Agencia de Viajes. Todos los derechos reservados.</p>
     </div>
 </body>
-</html>
+</html> */
